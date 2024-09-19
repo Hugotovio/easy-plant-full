@@ -93,4 +93,5 @@ def prepare_result_message(diferencia, tolerancia):
         return f"Conforme la tolerancia >> {round(tolerancia, 2)} gls."
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
+    app.run(host='0.0.0.0', port=port)  # Vincula a 0.0.0.0 y usa el puerto
