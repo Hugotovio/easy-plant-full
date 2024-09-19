@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+header img {
+    width: 100px;
+}
+
+main {
+    padding: 20px;
+}
+
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+.btn-custom {
+    width: 150px; /* Ajusta el ancho aquí */
+}
+.text-red {
+    color: red; /* Cambia el color del texto a rojo */
+}

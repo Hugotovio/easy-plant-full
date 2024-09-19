@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>Easy Plant</title>
+</head>
+<body>
+    <main class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="col-md-8 mx-auto">
+            <div class="bg-danger text-white p-4 rounded shadow"> <!-- Rojo Claro -->
+                <form id="data-form" action="/" method="post">
+                    <div class="container text-center mt-4">
+                        <h3 class="p-3 rounded-lg shadow-lg">EASY PLANT</h3>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tanque"><strong>Número del tanque (8 o 9):</strong></label>
+                                <input type="number" class="form-control" id="tanque" name="tanque" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="altura_inicial"><strong>Altura inicial (mm):</strong></label>
+                                <input type="number" class="form-control" id="altura_inicial" name="altura_inicial" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="altura_final"><strong>Altura final (mm):</strong></label>
+                                <input type="number" class="form-control" id="altura_final" name="altura_final">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="volumen"><strong>Volumen neto CarroTk (gls):</strong></label>
+                                <input type="number" class="form-control" id="volumen" name="volumen" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="api"><strong>API:</strong></label>
+                                <input type="number" class="form-control" id="api" name="api" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="temperatura"><strong>Temperatura (°F):</strong></label>
+                                <input type="number" class="form-control" id="temperatura" name="temperatura" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-light">Calcular</button> <!-- Botón claro -->
+                </form>
+            </div>
+            <div class="col-md-12 mx-auto">
+                <div id="results" class="d-none mt-4 bg-light p-4 rounded shadow">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Altura Inicial:</strong> <span id="altura_inicial_result"></span> mm</p>
+                            <p><strong>Volumen Inicial:</strong> <span id="vol_1_result"></span> galones</p>
+                            <p><strong>Altura Final:</strong> <span id="altura_final_result"></span> mm</p>
+                            <p><strong>Volumen Final:</strong> <span id="vol_2_result"></span> galones</p>
+                            <p><strong>Volumen Bruto Recibido:</strong> <span id="vol_br_rec_result"></span> galones</p>
+                            <p><strong>Temperatura:</strong> <span id="temperatura_result"></span> °F</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>API Observado:</strong> <span id="api_result"></span></p>
+                            <p><strong>API Corregido:</strong> <span id="api_corregido_result"></span></p>
+                            <p><strong>Factor de Corrección:</strong> <span id="fac_cor_result"></span></p>
+                            <p><strong>Neto Recibido * TK:</strong> <span id="vol_neto_rec_result"></span> galones</p>
+                            <p><strong>Neto Recibido CarroTK:</strong> <span id="volumen_result"></span> galones</p>
+                            <p><strong>Diferencias Neto:</strong> <span id="diferencia_result"></span> galones</p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p id="mensaje_result" class="h5 text-info"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('data-form').onsubmit = async function(event) {
+                event.preventDefault(); // Evitar el envío normal del formulario
+
+                const formData = new FormData(this);
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Mostrar resultados
+                    document.getElementById('altura_inicial_result').innerText = data.altura_inicial;
+                    document.getElementById('vol_1_result').innerText = data.vol_1;
+                    document.getElementById('altura_final_result').innerText = data.altura_final;
+                    document.getElementById('vol_2_result').innerText = data.vol_2;
+                    document.getElementById('vol_br_rec_result').innerText = data.vol_br_rec;
+                    document.getElementById('temperatura_result').innerText = data.temperatura;
+                    document.getElementById('api_result').innerText = data.api;
+                    document.getElementById('api_corregido_result').innerText = data.api_corregido;
+                    document.getElementById('fac_cor_result').innerText = data.fac_cor;
+                    document.getElementById('vol_neto_rec_result').innerText = data.vol_neto_rec;
+                    document.getElementById('volumen_result').innerText = data.volumen;
+                    document.getElementById('diferencia_result').innerText = data.diferencia;
+                    document.getElementById('mensaje_result').innerText = data.mensaje;
+
+                    // Mostrar los resultados
+                    document.getElementById('results').classList.remove('d-none');
+                } else {
+                    // Manejo de errores
+                    const errorData = await response.json();
+                    alert(errorData.error || "Error desconocido");
+                }
+            };
+        </script>
+    </main>
+</body>
+</html>
