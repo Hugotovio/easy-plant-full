@@ -55,27 +55,42 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-light">Calcular</button> <!-- Botón claro -->
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <button type="submit" class="btn btn-light">Calcular</button>
+                        </div>
+                        <div class="col text-center">
+                            <label for="galonesDrenados" class="me-2">Galones drenados:</label>
+                        </div>
+                        <div class="col">
+                            
+                            <input type="number" name="galonesDrenados" id="galonesDrenados" class="form-control" placeholder="0" width="50">
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
                 </form>
             </div>
             <div class="col-md-12 mx-auto">
                 <div id="results" class="d-none mt-4 bg-light p-4 rounded shadow">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Altura Inicial:</strong> <span id="altura_inicial_result"></span> mm</p>
-                            <p><strong>Volumen Inicial:</strong> <span id="vol_1_result"></span> galones</p>
-                            <p><strong>Altura Final:</strong> <span id="altura_final_result"></span> mm</p>
-                            <p><strong>Volumen Final:</strong> <span id="vol_2_result"></span> galones</p>
-                            <p><strong>Volumen Bruto Recibido:</strong> <span id="vol_br_rec_result"></span> galones</p>
+                            <p>Altura Inicial: <span id="altura_inicial_result"></span> mm</p>
+                            <p>Volumen Inicial: <span id="vol_1_result"></span>Gls.</p>
+                            <p>Altura Final: <span id="altura_final_result"></span> mm</p>
+                            <p>Volumen Final: <span id="vol_2_result"></span>Gls.</p>
+                            <p>Volumen Bruto Recibido:<strong><span id="vol_br_rec_result"></span></strong>Gls.</p>
                             <p><strong>Temperatura:</strong> <span id="temperatura_result"></span> °F</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>API Observado:</strong> <span id="api_result"></span></p>
-                            <p><strong>API Corregido:</strong> <span id="api_corregido_result"></span></p>
-                            <p><strong>Factor de Corrección:</strong> <span id="fac_cor_result"></span></p>
-                            <p><strong>Neto Recibido * TK:</strong> <span id="vol_neto_rec_result"></span> galones</p>
-                            <p><strong>Neto Recibido CarroTK:</strong> <span id="volumen_result"></span> galones</p>
-                            <p><strong>Diferencias Neto:</strong> <span id="diferencia_result"></span> galones</p>
+                            <p>API Observado:<span id="api_result"></span></p>
+                            <p>API Corregido: <span id="api_corregido_result"></span></p>
+                            <p>Factor de Corrección: <span id="fac_cor_result"></span></p>
+                            <p>Neto liquidado:<strong> <span id="vol_neto_rec_result"></span></strong> galones</p>
+                            <p>Neto CarroTK: <strong><span id="volumen_result"></span></strong> galones</p>
+                            <p>Diferencias Neto: <strong><span id="diferencia_result"></span></strong> galones</p>
                         </div>
                     </div>
                     <div class="text-center mt-4">

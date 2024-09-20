@@ -16,6 +16,7 @@ def index():
         volumen = request.form.get('volumen')
         api = request.form.get('api')
         temperatura = request.form.get('temperatura')
+        drenaje=request.form.get("galonesDrenados")
 
         try:
             numero = validate_number(tanque, "Número del tanque")
@@ -24,6 +25,7 @@ def index():
             volumen = validate_float(volumen, "Volumen neto CarroTk")
             api_observado = validate_float(api, "API")
             temp = validate_float(temperatura, "Temperatura")
+            drenaje = validate_float(drenaje, "galonesDrenados")
 
             check_height_limits(numero, altura_1)
 
@@ -46,7 +48,7 @@ def index():
             vol_br_rec = round((vol_2 - vol_1), 2)
             vol_neto_rec = round((vol_br_rec * fac_cor), 2)
             
-            diferencia = round((vol_neto_rec - volumen), 2)
+            diferencia = round((vol_neto_rec - volumen), 2)+drenaje
             tolerancia = volumen * 0.002
 
             mensaje = prepare_result_message(diferencia, tolerancia)
@@ -91,7 +93,7 @@ def prepare_result_message(diferencia, tolerancia):
     if diferencia < -tolerancia:
         return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)"
     else:
-        return f"Conforme la tolerancia >> {round(tolerancia, 2)} gls."
+        return f"Conforme,tolerancia ( -  {round(tolerancia, 2)} ) gls."
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
