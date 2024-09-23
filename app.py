@@ -96,7 +96,12 @@ def prepare_result_message(diferencia, tolerancia):
         return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)"
     else:
         return f"Conforme,tolerancia ( -  {round(tolerancia, 2)} ) gls."
-
+""" 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
     app.run()  # Vincula a 0.0.0.0 y usa el puerto
+
+"""
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku
+    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
