@@ -7,6 +7,7 @@ class DataLoader:
         self.directory = directory
     
     def load_file(self, filename):
+        
         """
         Carga un archivo del directorio especificado y devuelve su contenido en
         una estructura de datos de Python. El archivo puede ser JSON o CSV.

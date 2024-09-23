@@ -30,12 +30,23 @@ def index():
 
             check_height_limits(numero, altura_1)
 
-            tks = DataLoader("DB")
+            tks = DataLoader(".")
+            def elegiraforo():
+                if centro=="Santa Marta":
+                    if numero == 5:
+                      datos_path="smr-recuperador.json" 
+                    if numero == 4:
+                      datos_path="smr-tk-101.json" 
+                    return datos_path  
+                if centro=="Cartagena":
+                    if numero==8:
+                      datos_path = "aforo_tk_08.json"
+                    else:
+                        datos_path = "aforo_tk_09.json"
+                    return datos_path   
+            aforo_tks = tks.load_file(elegiraforo())
 
-            datos_path = "aforo_tk_08.json" if numero == 8 else "aforo_tk_09.json" 
-            aforo_tks = tks.load_file(datos_path)
-
-            obAforo = CalculadoraTanque(altura_inicial, volumen, tanque)
+            obAforo = CalculadoraTanque(altura_inicial, volumen, aforo_tks)
 
             vol_1 = obAforo.mostrar_volumen(aforo_tks, altura_inicial)
             if vol_1 is None:
@@ -97,6 +108,4 @@ def prepare_result_message(diferencia, tolerancia):
     else:
         return f"Conforme,tolerancia ( -  {round(tolerancia, 2)} ) gls."
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
-    app.run(debug=True )  # Vincula a 0.0.0.0 y usa el puerto
+

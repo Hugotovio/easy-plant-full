@@ -1,6 +1,6 @@
 import math
 
-from datos import DataLoader
+
 
 class CalculadoraTanque:
     def __init__(self,altura_inicial,volumen_bruto_recibido,tanque):
@@ -9,7 +9,8 @@ class CalculadoraTanque:
         self.tanque=tanque
         
 
-    def mostrar_volumen(self, diccionario,numero ):
+    def mostrar_volumen(self, diccionario,n ):
+        numero=int(n)     
         if numero == 0:
             return 0
 
@@ -19,22 +20,22 @@ class CalculadoraTanque:
             claves=[parte_entera,parte_decimal]
             
 
-        if 11 <= int(numero) <= 99:
+        if 11 <= numero <= 99:
             primer_digito = numero // 10
             segundo_digito = (numero % 10) / 10
             claves = [primer_digito, segundo_digito]
 
             suma = sum(diccionario.get(str(clave), 0) for clave in claves)
             return round(suma, 2)
-        if 1 <= int(numero) <= 9:
+        if 1 <= numero <= 9:
             primer_digito = numero / 10
             claves = [primer_digito]
 
             suma = sum(diccionario.get(str(clave), 0) for clave in claves)
             return round(suma, 2)
 
-        claves = [math.floor(int(numero)/ 100) * 10]
-        if int(numero) >= 100:
+        claves = [math.floor(numero / 100) * 10]
+        if numero >= 100:
             n = str(numero)
             claves.extend([int(n[2]), int(n[3]) / 10] if len(n) > 3 else [int(n[1]), int(n[2]) / 10])
         

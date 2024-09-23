@@ -6,7 +6,7 @@ class ApiCorreccion:
         self.api = api
         self.temperatura = temperatura
         # Usa DataLoader para cargar datos JSON
-        self.datos_loader = DataLoader(directory='.')
+        self.datos_loader = DataLoader(directory='DB')
         self.tablas_api = self.datos_loader.load_file('api_observado.json')
         self.tablas_temp = self.datos_loader.load_file('temperaturas.json')
 
