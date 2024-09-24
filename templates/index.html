@@ -27,28 +27,27 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="tanque"><strong>Número del tanque (8 o 9):</strong></label>
-                                <input type="number" class="form-control" id="tanque" name="tanque" required>
+                                <label for="tanque"><strong>Número del tanque:</strong></label>
+                                <select class="form-control" id="tanque" name="tanque" required>
+                                    <option value="">Selecciona un tanque</option>
+                                    <option value="smr-Tk-101">SMR-Tk-101</option>
+                                    <option value="smr-Tk-102">SMR-Tk-102</option>
+                                    <option value="smr-Tk-103">SMR-Tk-103</option>
+                                    <option value="ctg-tk-08">CTG-tk-08</option>
+                                    <option value="ctg-tk-09">CTG-tk-09</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="altura_inicial"><strong>Altura inicial (mm):</strong></label>
-                                <input type="number" class="form-control" id="altura_inicial" name="altura_inicial" required>
+                                <input type="number" class="form-control" id="altura_inicial" name="altura_inicial" step="0.01" required>
                             </div>
                             <div class="form-group">
                                 <label for="altura_final"><strong>Altura final (mm):</strong></label>
-                                <input type="number" class="form-control" id="altura_final" name="altura_final">
+                                <input type="number" class="form-control" id="altura_final" name="altura_final" step="0.01">
                             </div>
-                            <div class="form-group">
-                                <label for="centro_trabajo"><strong>Centro de trabajo:</strong></label>
-                                <select class="form-control" id="centro_trabajo" name="centro_trabajo" required>
-                                    <option value="">Selecciona un centro</option>
-                                    <option value="santamarta">Santa Marta</option>
-                                    <option value="baranquilla">Barranquilla</option>
-                                    <option value="cartagena">Cartagena</option>
-                                </select>
-                            </div>
+                            
                         </div>
-
+                
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="volumen"><strong>Volumen neto CarroTk (gls):</strong></label>
@@ -61,7 +60,7 @@
                             
                             <div class="form-group">
                                 <label for="temperatura"><strong>Temperatura (°F):</strong></label>
-                                <input type="number" class="form-control" id="temperatura" name="temperatura" required>
+                                <input type="number" class="form-control" id="temperatura" name="temperatura" step="0.1" required>
                             </div>
                         </div>
                     </div>
@@ -77,16 +76,17 @@
                         </div>
                     </div>
                 </form>
+                
             </div>
             <div class="col-md-12 mx-auto">
                 <div id="results" class="d-none mt-4 bg-light p-5 rounded shadow">
                     <div class="row">
                         <div class="col-md-6">
                             <p>Altura Inicial: <span id="altura_inicial_result"></span> mm</p>
-                            <p>Volumen Inicial: <span id="vol_1_result"></span>Gls.</p>
+                            <p>Volumen Inicial: <span id="vol_1_result"></span>.Gls</p>
                             <p>Altura Final: <span id="altura_final_result"></span> mm</p>
-                            <p>Volumen Final: <span id="vol_2_result"></span>Gls.</p>
-                            <p>Volumen Bruto Recibido:<strong><span id="vol_br_rec_result"></span></strong>Gls.</p>
+                            <p>Volumen Final: <span id="vol_2_result"></span>.Gls</p>
+                            <p>Volumen Bruto Recibido:<strong><span id="vol_br_rec_result"></span></strong>YGls</p>
                             <p>Temperatura:<span id="temperatura_result"></span> °F</p>
                         </div>
                         <div class="col-md-6">

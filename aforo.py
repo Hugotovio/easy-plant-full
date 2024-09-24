@@ -1,5 +1,5 @@
 import math
-
+from datos import DataLoader 
 
 
 class CalculadoraTanque:
@@ -9,7 +9,7 @@ class CalculadoraTanque:
         self.tanque=tanque
         
 
-    def mostrar_volumen(self, diccionario,n ):
+    def get_volumen_ctg(self, diccionario,n ):
         numero=int(n)     
         if numero == 0:
             return 0
@@ -44,48 +44,60 @@ class CalculadoraTanque:
 
 
 
+  
 
-    def mostrar_altura(self, volume, aforo):
-        aforo_tanque=self.preprocesar_datos(aforo)
-        sorted_heights = sorted(aforo_tanque.keys())
-        lower_height = None
-        upper_height = None
+    
+
+    import math
+
+    def get_volumen_smr(self, diccionario, numero):
+        n = float(numero)  # Convertir a float para manejar decimales
+        print(n)
         
-        for i in range(len(sorted_heights) - 1):
-            h1 = sorted_heights[i]
-            h2 = sorted_heights[i + 1]
-            
-            v1 = aforo_tanque[h1]
-            v2 = aforo_tanque[h2]
-            
-            if v1 <= volume <= v2:
-                lower_height = h1
-                upper_height = h2
-                break  # Una vez encontrado el rango, podemos salir del bucle
+        # Definir listas de incremento para diferentes tanques
+        increase_101 = [0.53, 0.67, 0.82, 0.97, 1.13, 1.30, 1.47, 1.66, 1.85]
+        increase_102 = [0.54, 0.67, 0.80, 0.95, 1.09, 1.24, 1.40, 1.54, 1.75]
+        increase_103 = [0.56, 0.69, 0.83, 0.97, 1.11, 1.26, 1.42, 1.59, 1.77]
+
+        # Verificar si n está en el diccionario
+        if str(n) in diccionario:
+            return diccionario[str(n)]
         
-        if lower_height is None or upper_height is None:
-            return None  # El volumen está fuera del rango de datos
-        
-        v1 = aforo_tanque[lower_height]
-        v2 = aforo_tanque[upper_height]
-        
-        height = lower_height + (volume - v1) * ((upper_height - lower_height) / (v2 - v1))
-        
-        return round(height * 10)
-    def preprocesar_datos(self,aforo_tanque_json):
-        """
-        Convierte un diccionario JSON con claves en formato de cadena a claves numéricas (int o float).
-        """
-        aforo_tanque = {}
-        for key, value in aforo_tanque_json.items():
-            try:
-                # Intenta convertir la clave a un número
-                numeric_key = float(key)
-                aforo_tanque[numeric_key] = value
-            except ValueError:
-                # Si no se puede convertir, maneja el error aquí
-                print(f"Advertencia: La clave '{key}' no es un número válido y será ignorada.")
-        return aforo_tanque
+        # Obtener parte entera y decimal
+        parte_decimal, parte_entera = math.modf(n)
+        parte_entera = int(parte_entera)
+
+        # Obtener el valor base
+        val_1 = diccionario.get(str(parte_entera), 0)
+
+        # Inicializar val_2
+        val_2 = 0
+
+        # Determinar qué incremento aplicar basado en el tanque
+        if "tk_101" in diccionario:
+            index = int(parte_decimal * 10)
+            if 0 <= index < len(increase_101):
+                val_2 = increase_101[index]
+        elif "tk_102" in diccionario:
+            index = int(parte_decimal * 10)
+            if 0 <= index < len(increase_102):
+                val_2 = increase_102[index]
+        elif "tk_103" in diccionario:
+            index = int(parte_decimal * 10)
+            if 0 <= index < len(increase_103):
+                val_2 = increase_103[index]
+
+        # Si n es un entero, retornar solo el valor base
+        if parte_decimal == 0:
+            return round(val_1, 2)
+
+        # Retornar la suma redondeada de val_1 y val_2
+        print(f"Valor Base: {val_1}, Incremento: {val_2}")  # Mensaje de depuración
+        return round(val_1 + val_2, 2)
+
+   
+
+
 
 
 
