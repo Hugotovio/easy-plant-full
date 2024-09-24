@@ -101,12 +101,12 @@ def prepare_result_message(diferencia, tolerancia):
 
 
 """ 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku
-    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
 
-"""
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
     app.run(debug=True)  # Vincula a 0.0.0.0 y usa el puerto
+"""
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku
+    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
