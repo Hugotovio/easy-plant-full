@@ -5,7 +5,7 @@ from api import ApiCorreccion
 from datos import DataLoader
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -53,7 +53,7 @@ def index():
             diferencia = round((vol_neto_rec - volumen), 2)+drenaje
             tolerancia = volumen * 0.002
 
-            mensaje = prepare_result_message(diferencia, tolerancia)
+            mensaje, mensaje_class = prepare_result_message(diferencia, tolerancia)
 
             return jsonify({
                 'altura_inicial': altura_1,
@@ -68,7 +68,10 @@ def index():
                 'vol_neto_rec': vol_neto_rec,
                 'volumen': volumen,
                 'diferencia': diferencia,
-                'mensaje': mensaje
+                'mensaje': mensaje,
+                'mensaje_class': mensaje_class
+                
+                
             })
 
         except ValueError as e:
@@ -90,18 +93,20 @@ def validate_float(value, field_name):
 def check_height_limits(numero, altura):
     if (numero == 8 and altura > 9728) or (numero == 9 and altura > 9799):
         raise ValueError(f"La altura máxima permitida para el tanque {numero} es {'9728 mm' if numero == 8 else '9799 mm'}.")
-
 def prepare_result_message(diferencia, tolerancia):
     if diferencia < -tolerancia:
-        return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)"
+        return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)", "display-4 text-danger"
     else:
-        return f"Conforme,tolerancia ( -  {round(tolerancia, 2)} ) gls."
-""" 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
-    app.run()  # Vincula a 0.0.0.0 y usa el puerto
+        return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-4 text-success"
 
-"""
+
+""" 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku
     app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
+
+"""
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))  # Obtén el puerto asignado por Heroku
+    app.run(debug=True)  # Vincula a 0.0.0.0 y usa el puerto

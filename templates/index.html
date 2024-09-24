@@ -99,8 +99,9 @@
                         </div>
                     </div>
                     <div class="text-center mt-4">
-                        <p id="mensaje_result" class="h5 text-info"></p>
+                        <p id="mensaje_result" ></p>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -131,7 +132,7 @@
                     document.getElementById('volumen_result').innerText = data.volumen;
                     document.getElementById('diferencia_result').innerText = data.diferencia;
                     document.getElementById('mensaje_result').innerText = data.mensaje;
-
+                    document.getElementById('mensaje_result').className = data.mensaje_class; // Establece la clase para el estilo
                     // Mostrar los resultados
                     document.getElementById('results').classList.remove('d-none');
                 } else {
