@@ -6,6 +6,7 @@ from datos import DataLoader
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -46,19 +47,26 @@ def index():
 def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, volumen, drenaje):
     tks = DataLoader("DB")
     obAforo = CalculadoraTanque(altura_inicial, volumen, numero)
-    
+
     # Mapeo del número del tanque al nombre del archivo
     datos_path = {
         "smr-Tk-101": "smr-tk-101.json",
         "smr-Tk-102": "smr-tk-102.json",
         "smr-Tk-103": "smr-tk-103.json",
-        "ctg-tk-08": "ctg-tk-08.json",
-        "ctg-tk-09": "ctg-tk-09.json"
+        "smr-recuperador": "smr-recuperador.json",
+        "ctg-tk-08": "aforo_tk_08.json",
+        "ctg-tk-09": "aforo_tk_09.json"
     }.get(numero)
 
     aforo_tks = tks.load_file(datos_path)
-    vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
-    vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
+
+    # Usa get_volumen_ctg para tanques CTG
+    if "ctg" in numero:
+        vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
+        vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)
+    else:
+        vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
+        vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
 
     ap = ApiCorreccion(api_observado, temp)
     api_corregido, fac_cor = ap.corregir_correccion()
@@ -82,8 +90,9 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         'mensaje_class': mensaje_class
     }
 
+
 def validate_tank_number(value):
-    valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103", "ctg-tk-08", "ctg-tk-09"]
+    valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103","smr-recuperador", "ctg-tk-08", "ctg-tk-09"]
     if value not in valid_tanks:
         raise ValueError("Número del tanque no válido.")
     return value
@@ -105,6 +114,7 @@ def prepare_result_message(diferencia, tolerancia):
         return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku
-    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
+    port = int(os.environ.get("PORT", 5000))  # Use the port from Heroku
+    app.run(host='0.0.0.0', port=port)  # Ensure you bind to all interfaces
+
 
