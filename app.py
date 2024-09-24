@@ -95,9 +95,9 @@ def check_height_limits(numero, altura):
         raise ValueError(f"La altura máxima permitida para el tanque {numero} es {'9728 mm' if numero == 8 else '9799 mm'}.")
 def prepare_result_message(diferencia, tolerancia):
     if diferencia < -tolerancia:
-        return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)", "display-4 text-danger"
+        return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)", "display-5 text-danger"
     else:
-        return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-4 text-success"
+        return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
 
 """ 
