@@ -77,15 +77,15 @@ class CalculadoraTanque:
         if "tk_101" in diccionario:
             index = int(parte_decimal * 10)
             if 0 <= index < len(increase_101):
-                val_2 = increase_101[index]
+                val_2 = increase_101[index]*index
         elif "tk_102" in diccionario:
             index = int(parte_decimal * 10)
             if 0 <= index < len(increase_102):
-                val_2 = increase_102[index]
+                val_2 = increase_102[index]*index
         elif "tk_103" in diccionario:
             index = int(parte_decimal * 10)
             if 0 <= index < len(increase_103):
-                val_2 = increase_103[index]
+                val_2 = increase_103[index]*index
 
         # Si n es un entero, retornar solo el valor base
         if parte_decimal == 0:
