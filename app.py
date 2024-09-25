@@ -114,7 +114,6 @@ def prepare_result_message(diferencia, tolerancia):
         return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Use the port from Heroku
-    app.run(debug=True)  # Ensure you bind to all interfaces
-
+    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku o 5000 por defecto
+    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
 
