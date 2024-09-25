@@ -18,7 +18,7 @@
         {% endwith %}
 
         <div class="col-md-8 mx-auto">
-            <div class="bg-danger text-white p-4 rounded shadow"> <!-- Rojo Claro -->
+            <div class="bg-danger text-white p-4 rounded shadow">
                 <form id="data-form" action="/" method="post">
                     <div class="container text-center mt-4">
                         <h3 class="bg-danger text-white p-4 rounded shadow">EASY PLANT</h3>
@@ -39,26 +39,24 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="altura_inicial"><strong>Altura inicial (mm):</strong></label>
+                                <label for="altura_inicial"><strong>Altura inicial (CTG-mm/SMR-cm):</strong></label>
                                 <input type="number" class="form-control" id="altura_inicial" name="altura_inicial" step="0.01" required>
                             </div>
                             <div class="form-group">
-                                <label for="altura_final"><strong>Altura final (mm):</strong></label>
+                                <label for="altura_final"><strong>Altura final (CTG-mm/SMR-cm):</strong></label>
                                 <input type="number" class="form-control" id="altura_final" name="altura_final" step="0.01">
                             </div>
-                            
                         </div>
                 
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="volumen"><strong>Volumen neto CarroTk (gls):</strong></label>
-                                <input type="number" class="form-control" id="volumen" name="volumen" required>
+                                <input type="text" class="form-control" id="volumen" name="volumen" pattern="^\d+(\.\d{1,3})?$" required>
                             </div>
                             <div class="form-group">
                                 <label for="api"><strong>API:</strong></label>
                                 <input type="number" class="form-control" id="api" name="api" step="0.1" required>
                             </div>
-                            
                             <div class="form-group">
                                 <label for="temperatura"><strong>Temperatura (°F):</strong></label>
                                 <input type="number" class="form-control" id="temperatura" name="temperatura" step="0.1" required>
@@ -77,7 +75,6 @@
                         </div>
                     </div>
                 </form>
-                
             </div>
             <div class="col-md-12 mx-auto">
                 <div id="results" class="d-none mt-4 bg-light p-5 rounded shadow">
@@ -102,12 +99,22 @@
                     <div class="text-center mt-4">
                         <p id="mensaje_result" ></p>
                     </div>
-                    
                 </div>
             </div>
         </div>
 
         <script>
+            document.getElementById('volumen').addEventListener('input', function() {
+                // Reemplazar comas por puntos
+                this.value = this.value.replace(',', '.');
+                
+                // Validar el formato y limitar a 3 decimales
+                const parts = this.value.split('.');
+                if (parts.length > 1 && parts[1].length > 3) {
+                    this.value = parts[0] + '.' + parts[1].substring(0, 3);
+                }
+            });
+
             document.getElementById('data-form').onsubmit = async function(event) {
                 event.preventDefault(); // Evitar el envío normal del formulario
 
