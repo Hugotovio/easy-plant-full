@@ -53,9 +53,10 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         "smr-Tk-101": "smr-tk-101.json",
         "smr-Tk-102": "smr-tk-102.json",
         "smr-Tk-103": "smr-tk-103.json",
-        "smr-recuperador": "smr-recuperador.json",
+        "smr-Tk-104": "smr-tk-104.json",
         "ctg-tk-08": "aforo_tk_08.json",
-        "ctg-tk-09": "aforo_tk_09.json"
+        "ctg-tk-09": "aforo_tk_09.json",
+        "ctg-tk-102": "aforo_tk_102.json"
     }.get(numero)
 
     aforo_tks = tks.load_file(datos_path)
@@ -92,7 +93,7 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
 
 
 def validate_tank_number(value):
-    valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103","smr-recuperador", "ctg-tk-08", "ctg-tk-09"]
+    valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103","smr-Tk-104", "ctg-tk-08","ctg-tk-102", "ctg-tk-09"]
     if value not in valid_tanks:
         raise ValueError("Número del tanque no válido.")
     return value
@@ -115,5 +116,5 @@ def prepare_result_message(diferencia, tolerancia):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku o 5000 por defecto
-    app.run(host='0.0.0.0', port=port)  # Asegúrate de enlazar a todas las interfaces
+    app.run(debug=True)  # Asegúrate de enlazar a todas las interfaces
 
