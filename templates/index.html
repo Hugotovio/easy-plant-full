@@ -154,52 +154,68 @@
         </div>
 
         <script>
-            document.getElementById('volumen').addEventListener('input', function() {
-                // Reemplazar comas por puntos
-                this.value = this.value.replace(',', '.');
-                
-                // Validar el formato y limitar a 3 decimales
-                const parts = this.value.split('.');
-                if (parts.length > 1 && parts[1].length > 3) {
-                    this.value = parts[0] + '.' + parts[1].substring(0, 3);
-                }
-            });
+    document.getElementById('volumen').addEventListener('input', function() {
+        // Reemplazar comas por puntos
+        this.value = this.value.replace(',', '.');
+        
+        // Validar el formato y limitar a 3 decimales
+        const parts = this.value.split('.');
+        if (parts.length > 1 && parts[1].length > 3) {
+            this.value = parts[0] + '.' + parts[1].substring(0, 3);
+        }
+    });
 
-            document.getElementById('data-form').onsubmit = async function(event) {
-                event.preventDefault(); // Evitar el envío normal del formulario
+    // Variable para determinar la unidad
+    let unidadAltura = 'mm';
 
-                const formData = new FormData(this);
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                });
+    // Función para actualizar la unidad según el tanque seleccionado
+    document.getElementById('tanque').addEventListener('change', function() {
+        if (this.value.startsWith('smr')) {
+            unidadAltura = 'cm';
+        } else {
+            unidadAltura = 'mm';
+        }
+    });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    // Mostrar resultados
-                    document.getElementById('altura_inicial_result').innerText = data.altura_inicial;
-                    document.getElementById('vol_1_result').innerText = data.vol_1 + '.Gls |  Liquidacion'; 
-                    document.getElementById('altura_final_result').innerText = data.altura_final;
-                    document.getElementById('vol_2_result').innerText = data.vol_2 + '.Gls |  Liquidacion'; 
-                    document.getElementById('vol_br_rec_result').innerText = data.vol_br_rec + '.Gls'; 
-                    document.getElementById('temperatura_result').innerText = data.temperatura+'°F' ;
-                    document.getElementById('api_result').innerText = data.api;
-                    document.getElementById('api_corregido_result').innerText = data.api_corregido;
-                    document.getElementById('fac_cor_result').innerText = data.fac_cor;
-                    document.getElementById('vol_neto_rec_result').innerText = data.vol_neto_rec + '.Gls'; 
-                    document.getElementById('volumen_result').innerText = data.volumen + '.Gls'; 
-                    document.getElementById('diferencia_result').innerText = data.diferencia + '.Gls'; 
-                    document.getElementById('mensaje_result').innerText = data.mensaje;
-                    document.getElementById('mensaje_result').className = data.mensaje_class; // Establece la clase para el estilo
-                    // Mostrar los resultados
-                    document.getElementById('results').classList.remove('d-none');
-                } else {
-                    // Manejo de errores
-                    const errorData = await response.json();
-                    alert(errorData.error || "Error desconocido");
-                }
-            };
-        </script>
+    document.getElementById('data-form').onsubmit = async function(event) {
+        event.preventDefault(); // Evitar el envío normal del formulario
+
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Mostrar resultados con la unidad adecuada
+            document.getElementById('altura_inicial_result').innerText = data.altura_inicial + ' ' + unidadAltura;
+            document.getElementById('vol_1_result').innerText = data.vol_1 + '.Gls'; 
+            document.getElementById('altura_final_result').innerText = data.altura_final + ' ' + unidadAltura;
+            document.getElementById('vol_2_result').innerText = data.vol_2 + '.Gls'; 
+            document.getElementById('vol_br_rec_result').innerText = data.vol_br_rec + '.Gls'; 
+            document.getElementById('temperatura_result').innerText = data.temperatura + '°F';
+            document.getElementById('api_result').innerText = data.api;
+            document.getElementById('api_corregido_result').innerText = data.api_corregido;
+            document.getElementById('fac_cor_result').innerText = data.fac_cor;
+            document.getElementById('vol_neto_rec_result').innerText = data.vol_neto_rec + '.Gls'; 
+            document.getElementById('volumen_result').innerText = data.volumen + '.Gls'; 
+            document.getElementById('diferencia_result').innerText = data.diferencia + '.Gls'; 
+            document.getElementById('mensaje_result').innerText = data.mensaje;
+            document.getElementById('mensaje_result').className = data.mensaje_class; // Establece la clase para el estilo
+            // Mostrar los resultados
+            document.getElementById('results').classList.remove('d-none');
+        } else {
+            // Manejo de errores
+            const errorData = await response.json();
+            alert(errorData.error || "Error desconocido");
+        }
+    };
+
+    // Llamar a la función al cargar la página para establecer la unidad inicial
+    document.getElementById('tanque').dispatchEvent(new Event('change'));
+</script>
+
     </main>
 </body>
 </html>

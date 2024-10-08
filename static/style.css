@@ -30,3 +30,17 @@ form {
 .text-red {
     color: red; /* Cambia el color del texto a rojo */
 }
+
+    .custom-table th, .custom-table td {
+        border: 2px solid #dc3545; /* Bordes rojos */
+    }
+
+    .custom-table {
+        background-color: transparent; /* Sin color de fondo */
+    }
+
+    .custom-table th {
+        background-color: transparent; /* Sin color de fondo para el encabezado */
+        color: #edc4c8; /* Texto rojo en el encabezado */
+    }
+
