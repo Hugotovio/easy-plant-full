@@ -93,65 +93,63 @@
             </div>
             <div class="col-md-12 mx-auto">
                 <div id="results" class="d-none mt-4 bg-light p-5 rounded shadow">
-                    <table class="table table-danger table-striped">
-                      <thead>
-                        <div class="text-center bg-light p-3">
-                            <h5>INFORMACION DE TANQUE DE RECIBO</h5>
-                        </div>
-                      </thead>
-                        <tbody>
-                            
-                            <tr>
-                                <td  id="altura_inicial_result"></td>
-                                <td id="vol_1_result"></td>
-                                
-                            </tr>
-                            <tr>
-                                <td id="altura_final_result"></td>
-                                <td id="vol_2_result"></td>
-                                
-                            </tr>
-                           
-                            <tr>
-                                <td>Volumen Bruto Recibido</td>
-                                <td><strong><span id="vol_br_rec_result"></span></strong></td>
-                            </tr>
-                            <tr>
-                                <td>Temperatura</td>
-                                <td id="temperatura_result"></td>
-                            </tr>
-                            <tr>
-                                <td>API Observado</td>
-                                <td id="api_result"></td>
-                            </tr>
-                            <tr>
-                                <td>API Corregido</td>
-                                <td id="api_corregido_result"></td>
-                            </tr>
-                            <tr>
-                                <td>Factor de Corrección</td>
-                                <td id="fac_cor_result"></td>
-                            </tr>
-                            <tr>
-                                <td>Neto liquidado</td>
-                                <td><strong><span id="vol_neto_rec_result"></span></strong></td>
-                            </tr>
-                            <tr>
-                                <td>Neto CarroTK</td>
-                                <td><strong><span id="volumen_result"></span></strong></td>
-                            </tr>
-                            <tr>
-                                <td>Diferencias Neto</td>
-                                <td><strong><span id="diferencia_result"></span></strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive"> <!-- Añadido aquí -->
+                        <table class="table table-danger table-striped">
+                            <thead>
+                                <div class="text-center bg-light p-3">
+                                    <h5>INFORMACION DE TANQUE DE RECIBO</h5>
+                                </div>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="altura_inicial_result"></td>
+                                    <td id="vol_1_result"></td>
+                                </tr>
+                                <tr>
+                                    <td id="altura_final_result"></td>
+                                    <td id="vol_2_result"></td>
+                                </tr>
+                                <tr>
+                                    <td>Volumen Bruto Recibido</td>
+                                    <td><strong><span id="vol_br_rec_result"></span></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Temperatura</td>
+                                    <td id="temperatura_result"></td>
+                                </tr>
+                                <tr>
+                                    <td>API Observado</td>
+                                    <td id="api_result"></td>
+                                </tr>
+                                <tr>
+                                    <td>API Corregido</td>
+                                    <td id="api_corregido_result"></td>
+                                </tr>
+                                <tr>
+                                    <td>Factor de Corrección</td>
+                                    <td id="fac_cor_result"></td>
+                                </tr>
+                                <tr>
+                                    <td>Neto liquidado</td>
+                                    <td><strong><span id="vol_neto_rec_result"></span></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Neto CarroTK</td>
+                                    <td><strong><span id="volumen_result"></span></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Diferencias Neto</td>
+                                    <td><strong><span id="diferencia_result"></span></strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="text-center mt-4">
                         <p id="mensaje_result"></p>
                     </div>
                 </div>
             </div>
-        </div>
+            
 
         <script>
     document.getElementById('volumen').addEventListener('input', function() {
