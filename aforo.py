@@ -1,4 +1,6 @@
 import math
+import json
+import os
 from datos import DataLoader 
 
 
@@ -13,39 +15,12 @@ class CalculadoraTanque:
         decimal = round(numero - entero, 2)  # Redondeamos para evitar problemas de precisión
         decimal_str = str(decimal).split('.')[1]  # Obtenemos la parte decimal como string
         return entero, int(decimal_str)  # Convertimos la parte decimal a entero
+    
 
-    def get_volumen_ctg(self, diccionario,n ):
-        numero=int(n)     
-        if numero == 0:
-            return 0
-
-        if str(numero) in diccionario:
-            nr=numero/10
-            parte_decimal, parte_entera = math.modf(nr)
-            claves=[parte_entera,parte_decimal]
-            
-
-        if 11 <= numero <= 99:
-            primer_digito = numero // 10
-            segundo_digito = (numero % 10) / 10
-            claves = [primer_digito, segundo_digito]
-
-            suma = sum(diccionario.get(str(clave), 0) for clave in claves)
-            return round(suma, 2)
-        if 1 <= numero <= 9:
-            primer_digito = numero / 10
-            claves = [primer_digito]
-
-            suma = sum(diccionario.get(str(clave), 0) for clave in claves)
-            return round(suma, 2)
-
-        claves = [math.floor(numero / 100) * 10]
-        if numero >= 100:
-            n = str(numero)
-            claves.extend([int(n[2]), int(n[3]) / 10] if len(n) > 3 else [int(n[1]), int(n[2]) / 10])
+    def get_volumen_ctg(self, diccionario,clave ):
+       clave = int(clave)  # Aseguramos que la clave sea un entero
+       return diccionario.get(str(clave))
         
-        suma = sum(diccionario.get(str(clave), 0) for clave in claves)
-        return round(suma, 2)
 
     def get_volumen_smr(self, diccionario, n):
         
@@ -251,4 +226,5 @@ class CalculadoraTanque:
         # Retornar la suma sin redondear hasta el final
         return round((val_1 + val_2), 2)
 
+   
     

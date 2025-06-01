@@ -12,6 +12,7 @@ def index():
     if request.method == 'POST':
         tanque = request.form.get('tanque')
         altura_inicial = request.form.get('altura_inicial')
+        print(altura_inicial)
         altura_final = request.form.get('altura_final')
         volumen = request.form.get('volumen')
         api = request.form.get('api')
@@ -29,7 +30,7 @@ def index():
 
             check_height_limits(numero, altura_1)
             vol_1, vol_2, result = calculate_volume(numero, altura_1, altura_final, api_observado, temp, volumen, drenaje)
-
+        
             if result:
                 return jsonify({
                     'altura_inicial': altura_1,
@@ -61,13 +62,22 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
 
     aforo_tks = tks.load_file(datos_path)
 
-    # Usa get_volumen_ctg para tanques CTG
+    #prueba 
     if "ctg" in numero:
-        vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
-        vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)
+        vol_1 = obAforo.get_volumen_ctg(aforo_tks,altura_inicial)
+        print("volumen inicial CTG:", vol_1)
+        vol_2 = obAforo.get_volumen_ctg(aforo_tks,altura_final)
     else:
         vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
         vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
+
+    # Usa get_volumen_ctg para tanques CTG
+    #if "ctg" in numero:
+       # vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
+       # vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)
+    #else:
+        #vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
+       # vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
 
     ap = ApiCorreccion(api_observado, temp)
     api_corregido, fac_cor = ap.corregir_correccion()
@@ -116,5 +126,5 @@ def prepare_result_message(diferencia, tolerancia):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku o 5000 por defecto
-    app.run(host="0.0.0.0",port=port)  # Asegúrate de enlazar a todas las interfaces
+    app.run(host="0.0.0.0",port=port,debug=True)  # Asegúrate de enlazar a todas las interfaces
 
