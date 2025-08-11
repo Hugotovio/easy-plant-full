@@ -3,9 +3,9 @@ from flask import Flask, jsonify, render_template, request, flash
 from aforo import CalculadoraTanque
 from api import ApiCorreccion
 from datos import DataLoader
+from validaciones import Validaciones  # Importamos la clase Validaciones
 
 app = Flask(__name__)
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -20,15 +20,18 @@ def index():
         drenaje = request.form.get("galonesDrenados")
        
         try:
-            numero = validate_tank_number(tanque)
-            altura_1 = validate_float(altura_inicial, "Altura inicial")
-            altura_final = validate_float(altura_final, "Altura final")
-            volumen = validate_float(volumen, "Volumen neto CarroTk")
-            api_observado = validate_float(api, "API")
-            temp = validate_float(temperatura, "Temperatura")
-            drenaje = validate_float(drenaje, "galonesDrenados")
+            # Usamos la clase Validaciones para hacer las validaciones
+            numero = Validaciones.validate_tank_number(tanque)
+            altura_1 = Validaciones.validate_float(altura_inicial, "Altura inicial")
+            altura_final = Validaciones.validate_float(altura_final, "Altura final")
+            volumen = Validaciones.validate_float(volumen, "Volumen neto CarroTk")
+            
+            # Validaciones específicas para API y Temperatura
+            api_observado = Validaciones.validate_api(api)
+            temp = Validaciones.validate_temperature(temperatura)
+            drenaje = Validaciones.validate_float(drenaje, "galonesDrenados")
 
-            check_height_limits(numero, altura_1)
+            # Lógica del cálculo de volumen
             vol_1, vol_2, result = calculate_volume(numero, altura_1, altura_final, api_observado, temp, volumen, drenaje)
         
             if result:
@@ -41,7 +44,7 @@ def index():
                 })
 
         except ValueError as e:
-            flash(str(e), 'error')
+            flash(str(e), 'error')  # Muestra el mensaje de error al usuario
 
     return render_template('index.html')
 
@@ -57,7 +60,7 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         "smr-Tk-104": "smr-tk-104.json",
         "ctg-tk-08": "aforo_tk_08.json",
         "ctg-tk-09": "aforo_tk_09.json",
-        "ctg-tk-102": "aforo_tk_102.json"
+        "ctg-tk-102": "aforo_tk_10.json"
     }.get(numero)
 
     aforo_tks = tks.load_file(datos_path)
@@ -70,14 +73,6 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
     else:
         vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
         vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
-
-    # Usa get_volumen_ctg para tanques CTG
-    #if "ctg" in numero:
-       # vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
-       # vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)
-    #else:
-        #vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
-       # vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
 
     ap = ApiCorreccion(api_observado, temp)
     api_corregido, fac_cor = ap.corregir_correccion()
@@ -101,23 +96,6 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         'mensaje_class': mensaje_class
     }
 
-
-def validate_tank_number(value):
-    valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103","smr-Tk-104", "ctg-tk-08","ctg-tk-102", "ctg-tk-09"]
-    if value not in valid_tanks:
-        raise ValueError("Número del tanque no válido.")
-    return value
-
-def validate_float(value, field_name):
-    try:
-        return float(value)
-    except ValueError:
-        raise ValueError(f"{field_name} debe ser un número decimal.")
-
-def check_height_limits(numero, altura):
-    # Agregar lógica para los límites de altura si aplica
-    pass
-
 def prepare_result_message(diferencia, tolerancia):
     if diferencia < -tolerancia:
         return f"Faltante de: {round(diferencia, 2)} gls (Tolerancia: {round(tolerancia, 2)} gls)", "display-5 text-danger"
@@ -126,5 +104,4 @@ def prepare_result_message(diferencia, tolerancia):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku o 5000 por defecto
-    app.run(host="0.0.0.0",port=port,debug=True)  # Asegúrate de enlazar a todas las interfaces
-
+    app.run(host="0.0.0.0", port=port, debug=True)  # Asegúrate de enlazar a todas las interfaces
