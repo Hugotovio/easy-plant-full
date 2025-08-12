@@ -6,29 +6,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <title>Easy Plant</title>
-    <style>
-        .table-danger th, .table-danger td {
-            border: 2px solid #dc3545; /* Bordes rojos */
-        }
-
-        .table-danger {
-            background-color: #f8d7da; /* Fondo claro para la tabla */
-        }
-
-        .table-danger th {
-            background-color: #dc3545; /* Fondo rojo para el encabezado */
-            color: white; /* Texto blanco en el encabezado */
-        }
-
-        #results {
-            padding: 0; /* Eliminar padding si es necesario */
-            width: 100%; /* Asegurar que ocupa el ancho completo */
-        }
-
-        .table-responsive {
-            width: 100%; /* Asegurar que la tabla ocupe el ancho completo del contenedor */
-        }
-    </style>
+    
 </head>
 <body>
     <main class="container-fluid mt-5">
@@ -41,10 +19,10 @@
         {% endwith %}
 
         <div class="col-md-8 mx-auto">
-            <div class="bg-danger text-white p-4 rounded shadow">
+            <div class="bg-dark text-white p-4 rounded shadow">
                 <form id="data-form" action="/" method="post">
                     <div class="container text-center mt-4">
-                        <h3 class="bg-danger text-white p-4 rounded shadow">EASY PLANT.</h3>
+                        <h3>EASY PLANT</h3>
                     </div>
                     
                     <div class="row">
