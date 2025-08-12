@@ -49,7 +49,7 @@ def index():
     return render_template('index.html')
 
 def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, volumen, drenaje):
-    tks = DataLoader("DB")
+    tks = DataLoader("DB/tablas_aforo")
     obAforo = CalculadoraTanque(altura_inicial, volumen, numero)
 
     # Mapeo del número del tanque al nombre del archivo

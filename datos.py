@@ -42,31 +42,4 @@ class DataLoader:
             for row in reader:
                 data.append(row)
         return data
-"""
-# Ejemplo de uso de la clase DataLoader
-if __name__ == "__main__":
-    # Especifica el directorio donde están los archivos. 
-    # En este caso, si los archivos están en la raíz del proyecto, se usa el directorio actual.
-    directory = '.'  # Usar '.' para el directorio actual
-    
-    # Instancia de DataLoader
-    data_loader = DataLoader(directory=directory)
-
-    # Especifica el nombre del archivo que quieres cargar
-    filename = 'temperaturas.json'  # Cambia 'example.json' por el nombre del archivo que necesitas
-
-    # Cargar el archivo y manejar posibles excepciones
-    try:
-        data = data_loader.load_file(filename)
-        print(f"Datos cargados desde {filename}:", data)
-    except Exception as e:
-        print("Error:", e)
-
-    # Puedes repetir el proceso para un archivo CSV
-    filename = 'example.csv'  # Cambia 'example.csv' por el nombre del archivo CSV
-    try:
-        data = data_loader.load_file(filename)
-        print(f"Datos cargados desde {filename}:", data)
-    except Exception as e:
-"""
 

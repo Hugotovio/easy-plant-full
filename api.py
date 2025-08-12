@@ -6,7 +6,7 @@ class ApiCorreccion:
         self.api = api
         self.temperatura = temperatura
         # Usa DataLoader para cargar datos JSON
-        self.datos_loader = DataLoader(directory='DB')
+        self.datos_loader = DataLoader(directory='DB/api_tem_fc')
         self.tablas_api = self.datos_loader.load_file('api_observado.json')
         self.tablas_temp = self.datos_loader.load_file('temperaturas.json')
 
@@ -89,18 +89,4 @@ class ApiCorreccion:
         fc=int(factor_correccion)/10000
         return apicor, fc
 
-def main():
-    # Instancia de ApiCorreccion
-    api = 46  # Reemplaza con el valor real
-    temperatura = 90  # Reemplaza con el valor real
-    
-    api_correccion = ApiCorreccion(api, temperatura)
-    
-    apicor, factor_correccion = api_correccion.corregir_correccion()
-    
-    
-   
 
-
-if __name__ == "__main__":
-    main()

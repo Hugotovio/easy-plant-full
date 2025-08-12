@@ -1,7 +1,7 @@
 import math
 import json
 import os
-from datos import DataLoader 
+
 
 
 class CalculadoraTanque:
