@@ -1,0 +1,8 @@
+/* Personalizar el placeholder */
+#altura_inicial::placeholder {
+  color: red;          /* Color del texto */
+  font-size: 14px;     /* Tamaño */
+  font-weight: bold;   /* Negrita */
+  font-style: italic;  /* Opcional: cursiva */
+  opacity: 1;          /* Asegura que se vea bien en todos los navegadores */
+}
