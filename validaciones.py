@@ -3,7 +3,8 @@ class Validaciones:
 
     @staticmethod
     def validate_tank_number(value):
-        valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103", "smr-Tk-104", "ctg-tk-08", "ctg-tk-09", "ctg-tk-102"]
+        valid_tanks = ["smr-Tk-101", "smr-Tk-102", "smr-Tk-103", "smr-Tk-104", "ctg-tk-08", "ctg-tk-09", "ctg-tk-102", 
+                       "baq-tk-504", "baq-tk-503", "baq-tk-505"]
         if value not in valid_tanks:
             raise ValueError("Número del tanque no válido.")
         return value

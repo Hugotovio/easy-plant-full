@@ -60,7 +60,10 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         "smr-Tk-104": "smr-tk-104.json",
         "ctg-tk-08": "aforo_tk_08.json",
         "ctg-tk-09": "aforo_tk_09.json",
-        "ctg-tk-102": "aforo_tk_10.json"
+        "ctg-tk-102": "aforo_tk_10.json",
+        "baq-tk-504": "baq-tk-504.json",
+        "baq-tk-503": "baq-tk-503.json",
+        "baq-tk-505": "baq-tk-505.json"
     }.get(numero)
 
     aforo_tks = tks.load_file(datos_path)
@@ -70,6 +73,9 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
         vol_1 = obAforo.get_volumen_ctg(aforo_tks,altura_inicial)
         print("volumen inicial CTG:", vol_1)
         vol_2 = obAforo.get_volumen_ctg(aforo_tks,altura_final)
+    elif "baq" in numero:
+        vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
+        vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)    
     else:
         vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
         vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
