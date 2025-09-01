@@ -1,5 +1,8 @@
-import os
-from flask import Flask, jsonify, render_template, request, flash
+import os, json
+from pathlib import Path
+from datetime import timedelta
+from flask import Flask, jsonify, render_template, request, session
+
 from aforo import CalculadoraTanque
 from api import ApiCorreccion
 from datos import DataLoader
@@ -7,81 +10,139 @@ from validaciones import Validaciones  # Importamos la clase Validaciones
 
 app = Flask(__name__)
 
+# --- Sesión y rutas de archivos ---
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me")
+app.permanent_session_lifetime = timedelta(days=7)
+
+BASE_DIR = Path(__file__).parent
+AIRPORTS_FILE = os.environ.get("AIRPORTS_FILE", str(BASE_DIR / "DB" / "airports.json"))
+TANK_MAP_FILE = os.environ.get("TANK_MAP_FILE", str(BASE_DIR / "DB" / "tank_map.json"))
+
+# --- Carga de catálogos ---
+def load_airports(file_path: str) -> dict:
+    p = Path(file_path)
+    if not p.exists():
+        app.logger.warning(f"[AIRPORTS] No se encontró {file_path}. Usando diccionario vacío.")
+        return {}
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        # Validación mínima
+        for code, meta in data.items():
+            if not isinstance(meta, dict):
+                raise ValueError(f"Aeropuerto {code} inválido (no es objeto)")
+            if "nombre" not in meta or "tanques" not in meta or not isinstance(meta["tanques"], list):
+                raise ValueError(f"Estructura inválida para aeropuerto {code}")
+        return data
+    except Exception as e:
+        app.logger.error(f"[AIRPORTS] Error cargando {file_path}: {e}")
+        return {}
+
+def load_tank_map(file_path: str) -> dict:
+    p = Path(file_path)
+    if not p.exists():
+        app.logger.warning(f"[TANK_MAP] No se encontró {file_path}. Usando diccionario vacío.")
+        return {}
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        # Opcional: volver claves case-insensitive (a minúsculas)
+        return {str(k).lower(): str(v) for k, v in raw.items()}
+    except Exception as e:
+        app.logger.error(f"[TANK_MAP] Error cargando {file_path}: {e}")
+        return {}
+
+AIRPORTS = load_airports(AIRPORTS_FILE)
+TANK_MAP = load_tank_map(TANK_MAP_FILE)
+
+# --- Utilidades ---
+def tank_belongs_to_airport(tank_code: str, airport_code: str) -> bool:
+    if not tank_code or not airport_code:
+        return False
+    return tank_code.upper() in {t.upper() for t in AIRPORTS.get(airport_code, {}).get("tanques", [])}
+
+def get_tank_path(numero: str) -> str:
+    """Devuelve el nombre de archivo de aforo para el tanque `numero` usando TANK_MAP (case-insensitive)."""
+    if not numero:
+        raise ValueError("Código de tanque vacío.")
+    path = TANK_MAP.get(numero.lower())
+    if not path:
+        raise ValueError(f"Tanque '{numero}' no está configurado en {TANK_MAP_FILE}.")
+    return path
+
+# --- Ruta principal: POST devuelve JSON (para fetch), GET renderiza main.html ---
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def main():
     if request.method == 'POST':
+        airport = (request.form.get('airport') or "").upper().strip()
         tanque = request.form.get('tanque')
         altura_inicial = request.form.get('altura_inicial')
-        print(altura_inicial)
         altura_final = request.form.get('altura_final')
         volumen = request.form.get('volumen')
         api = request.form.get('api')
         temperatura = request.form.get('temperatura')
         drenaje = request.form.get("galonesDrenados")
-       
+
+        # Validaciones rápidas (JSON)
+        if not airport or airport not in AIRPORTS:
+            return jsonify({"error": "Selecciona un aeropuerto válido."}), 400
+        if not tanque:
+            return jsonify({"error": "Selecciona un tanque."}), 400
+        if not tank_belongs_to_airport(tanque, airport):
+            return jsonify({"error": "El tanque no pertenece al aeropuerto seleccionado."}), 400
+
         try:
-            # Usamos la clase Validaciones para hacer las validaciones
+            # Validaciones de negocio
             numero = Validaciones.validate_tank_number(tanque)
             altura_1 = Validaciones.validate_float(altura_inicial, "Altura inicial")
             altura_final = Validaciones.validate_float(altura_final, "Altura final")
             volumen = Validaciones.validate_float(volumen, "Volumen neto CarroTk")
-            
-            # Validaciones específicas para API y Temperatura
             api_observado = Validaciones.validate_api(api)
             temp = Validaciones.validate_temperature(temperatura)
             drenaje = Validaciones.validate_float(drenaje, "galonesDrenados")
 
-            # Lógica del cálculo de volumen
-            vol_1, vol_2, result = calculate_volume(numero, altura_1, altura_final, api_observado, temp, volumen, drenaje)
-        
-            if result:
-                return jsonify({
-                    'altura_inicial': altura_1,
-                    'altura_final': altura_final,
-                    'vol_1': vol_1,
-                    'vol_2': vol_2,
-                    **result
-                })
+            # Cálculo
+            vol_1, vol_2, result = calculate_volume(
+                numero, altura_1, altura_final, api_observado, temp, volumen, drenaje
+            )
+
+            # Guarda el aeropuerto elegido por conveniencia futura
+            session["airport"] = airport
+
+            return jsonify({
+                'altura_inicial': altura_1,
+                'altura_final': altura_final,
+                'vol_1': vol_1,
+                'vol_2': vol_2,
+                **result
+            })
 
         except ValueError as e:
-            flash(str(e), 'error')  # Muestra el mensaje de error al usuario
+            return jsonify({"error": str(e)}), 400
 
-    return render_template('index.html')
+    # GET: pasamos el catálogo completo; sin preselección (placeholder en el HTML)
+    return render_template('index.html', airports=AIRPORTS)
 
+# --- Cálculo de volumen ---
 def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, volumen, drenaje):
     tks = DataLoader("DB/tablas_aforo")
     obAforo = CalculadoraTanque(altura_inicial, volumen, numero)
 
-    # Mapeo del número del tanque al nombre del archivo
-    datos_path = {
-        "smr-Tk-101": "smr-tk-101.json",
-        "smr-Tk-102": "smr-tk-102.json",
-        "smr-Tk-103": "smr-tk-103.json",
-        "smr-Tk-104": "smr-tk-104.json",
-        "ctg-tk-08": "aforo_tk_08.json",
-        "ctg-tk-09": "aforo_tk_09.json",
-        "ctg-tk-102": "aforo_tk_10.json",
-        "baq-tk-504": "baq-tk-504.json",
-        "baq-tk-503": "baq-tk-503.json",
-        "baq-tk-505": "baq-tk-505.json"
-    }.get(numero)
-
+    # Archivo de aforo (desde DB/tank_map.json)
+    datos_path = get_tank_path(numero)
     aforo_tks = tks.load_file(datos_path)
 
-    #prueba 
-    if "ctg" in numero:
-        vol_1 = obAforo.get_volumen_ctg(aforo_tks,altura_inicial)
-        print("volumen inicial CTG:", vol_1)
-        vol_2 = obAforo.get_volumen_ctg(aforo_tks,altura_final)
-    elif "baq" in numero:
+    # Método según prefijo (normalizado)
+    num_l = (numero or "").lower()
+    if "ctg" in num_l or "baq" in num_l:
         vol_1 = obAforo.get_volumen_ctg(aforo_tks, altura_inicial)
-        vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)    
+        vol_2 = obAforo.get_volumen_ctg(aforo_tks, altura_final)
     else:
+        # SMR por defecto
         vol_1 = obAforo.get_volumen_smr(aforo_tks, altura_inicial)
         vol_2 = obAforo.get_volumen_smr(aforo_tks, altura_final)
 
     ap = ApiCorreccion(api_observado, temp)
     api_corregido, fac_cor = ap.corregir_correccion()
+
     vol_br_rec = round((vol_2 - vol_1), 2)
     vol_neto_rec = round((vol_br_rec * fac_cor), 2)
 
@@ -109,5 +170,5 @@ def prepare_result_message(diferencia, tolerancia):
         return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de Heroku o 5000 por defecto
-    app.run(host="0.0.0.0", port=port, debug=True)  # Asegúrate de enlazar a todas las interfaces
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
