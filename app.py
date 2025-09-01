@@ -2,6 +2,7 @@ import os, json
 from pathlib import Path
 from datetime import timedelta
 from flask import Flask, jsonify, render_template, request, session
+from decimal import Decimal, ROUND_HALF_UP  # ⬅ para redondeo 0.5 "half up"
 
 from aforo import CalculadoraTanque
 from api import ApiCorreccion
@@ -44,7 +45,7 @@ def load_tank_map(file_path: str) -> dict:
         return {}
     try:
         raw = json.loads(p.read_text(encoding="utf-8"))
-        # Opcional: volver claves case-insensitive (a minúsculas)
+        # Claves case-insensitive en memoria
         return {str(k).lower(): str(v) for k, v in raw.items()}
     except Exception as e:
         app.logger.error(f"[TANK_MAP] Error cargando {file_path}: {e}")
@@ -68,7 +69,16 @@ def get_tank_path(numero: str) -> str:
         raise ValueError(f"Tanque '{numero}' no está configurado en {TANK_MAP_FILE}.")
     return path
 
-# --- Ruta principal: POST devuelve JSON (para fetch), GET renderiza main.html ---
+def redondear_a_05_half_up(valor: float) -> float:
+    """
+    Redondea al múltiplo de 0.5 más cercano usando 'half up' (25→25, 25.25→25.5, 25.75→26.0).
+    Evita el redondeo bancario de round() de Python.
+    """
+    d = Decimal(str(valor)) * Decimal('2')
+    entero = d.quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+    return float(entero / Decimal('2'))
+
+# --- Ruta principal: POST devuelve JSON (para fetch), GET renderiza index.html ---
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST':
@@ -90,14 +100,19 @@ def main():
             return jsonify({"error": "El tanque no pertenece al aeropuerto seleccionado."}), 400
 
         try:
-            # Validaciones de negocio
+            # Validaciones de negocio base
             numero = Validaciones.validate_tank_number(tanque)
             altura_1 = Validaciones.validate_float(altura_inicial, "Altura inicial")
             altura_final = Validaciones.validate_float(altura_final, "Altura final")
             volumen = Validaciones.validate_float(volumen, "Volumen neto CarroTk")
-            api_observado = Validaciones.validate_api(api)
-            temp = Validaciones.validate_temperature(temperatura)
             drenaje = Validaciones.validate_float(drenaje, "galonesDrenados")
+
+            # API: aceptar decimales y redondear a múltiplo de 0.5 más cercano
+            api_input = Validaciones.validate_float(api, "API")
+            api_observado = redondear_a_05_half_up(api_input)
+
+            # Temperatura: usa tu validación actual (no cambiamos reglas aquí)
+            temp = Validaciones.validate_temperature(temperatura)
 
             # Cálculo
             vol_1, vol_2, result = calculate_volume(
@@ -112,7 +127,7 @@ def main():
                 'altura_final': altura_final,
                 'vol_1': vol_1,
                 'vol_2': vol_2,
-                **result
+                **result  # 'api' en result ya va con el api_observado redondeado
             })
 
         except ValueError as e:
@@ -152,7 +167,7 @@ def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, 
 
     return vol_1, vol_2, {
         'vol_br_rec': vol_br_rec,
-        'api': api_observado,
+        'api': api_observado,          # API redondeado
         'api_corregido': api_corregido,
         'temperatura': temp,
         'fac_cor': fac_cor,

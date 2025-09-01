@@ -19,7 +19,7 @@ function rebuildTanksForAirport(airportCode) {
 
   const code = (airportCode || '').toUpperCase().trim();
   // Guardar el placeholder actual (índice 0)
-  const placeholder = sel.options[0].cloneNode(true);
+  const placeholder = sel.options[0]?.cloneNode(true) || new Option('Selecciona un tanque', '');
 
   // Limpiar el select y volver a poner el placeholder
   sel.innerHTML = '';
@@ -49,6 +49,25 @@ function rebuildTanksForAirport(airportCode) {
   sel.disabled = sel.options.length <= 1;
 }
 
+// 🔹 NUEVO: actualizar placeholders de altura según aeropuerto
+function updateAlturaPlaceholdersByAirport(airportCode) {
+  const ai = document.getElementById('altura_inicial');
+  const af = document.getElementById('altura_final');
+  if (!ai || !af) return;
+
+  const baseIni = 'Altura Inicial';
+  const baseFin = 'Altura Final';
+
+  if ((airportCode || '').toUpperCase() === 'SMR') {
+    ai.placeholder = baseIni + ' (Centímetros)';
+    af.placeholder = baseFin + ' (Centímetros)';
+  } else {
+    // Sin unidad (o pon ' (Milímetros)' si lo prefieres)
+    ai.placeholder = baseIni;
+    af.placeholder = baseFin;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   // Forzar placeholder en aeropuerto al cargar (evita autocompletar del navegador)
   const airportSel = document.getElementById('airport');
@@ -60,13 +79,15 @@ document.addEventListener('DOMContentLoaded', function () {
   // Cachear opciones originales de tanques (una sola vez)
   cacheTankOptions();
 
-  // Estado inicial del select de tanques (sin aeropuerto elegido)
+  // Estado inicial
   rebuildTanksForAirport('');
+  updateAlturaPlaceholdersByAirport(''); // 🔹 set inicial de placeholders
 
-  // Filtrado por aeropuerto reconstruyendo opciones (mejora UX móvil)
+  // Filtrado por aeropuerto + actualización de placeholders
   if (airportSel) {
     airportSel.addEventListener('change', function () {
       rebuildTanksForAirport(airportSel.value);
+      updateAlturaPlaceholdersByAirport(airportSel.value); // 🔹 actualizar placeholders
       // Opcional: reset de unidad cuando cambie aeropuerto
       const tanqueSel = document.getElementById('tanque');
       if (tanqueSel) tanqueSel.dispatchEvent(new Event('change'));
