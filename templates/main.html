@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Deja tu CSS como lo tengas hoy; si lo moviste a static, cambia por url_for('static', filename='style.css') -->
+    <link rel="stylesheet" href="style.css">
+    <title>Easy Plant</title>
+    <!-- Carga el JS externo con defer -->
+    <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body>
+    <div class="col-md-8 mx-auto">
+        <div class="bg-dark text-white p-4 rounded shadow">
+            <form id="data-form" action="/" method="post" autocomplete="off">
+                <div class="container text-center mt-4">
+                    <h3>EASY PLANT</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Aeropuerto con placeholder (sin preselección) -->
+                        <div class="form-group">
+                            <select class="form-control" id="airport" name="airport" required>
+                                <option value="" selected disabled>Selecciona aeropuerto</option>
+                                {% for code, meta in airports.items() %}
+                                  <option value="{{ code }}">{{ code }} — {{ meta['nombre'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="form-control" id="tanque" name="tanque" required disabled>
+                                <option value="">Selecciona un tanque</option>
+                                <option value="smr-Tk-101">SMR-Tk-01</option>
+                                <option value="smr-Tk-102">SMR-Tk-02</option>
+                                <option value="smr-Tk-103">SMR-Tk-03</option>
+                                <option value="smr-Tk-104">SMR-Tk-04</option>
+                                <option value="ctg-tk-08">CTG-tk-08</option>
+                                <option value="ctg-tk-09">CTG-tk-09</option>
+                                <option value="ctg-tk-10">CTG-tk-10</option>
+                                <option value="baq-tk-504">BAQ-tk-504</option>
+                                <option value="baq-tk-503">BAQ-tk-503</option>
+                                <option value="baq-tk-505">BAQ-tk-505</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <input placeholder="Altura Inicial" type="number" class="form-control" id="altura_inicial" name="altura_inicial" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <input placeholder="Altura Final" type="number" class="form-control" id="altura_final" name="altura_final" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input placeholder="Volumen neto CarroTk" type="text" class="form-control" id="volumen" name="volumen" pattern="^\d+(\.\d{1,3})?$" required>
+                        </div>
+                        <div class="form-group">
+                            <input placeholder="API" type="number" class="form-control" id="api" name="api" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <input placeholder="Temperatura" type="number" class="form-control" id="temperatura" name="temperatura" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col">
+                        <button type="submit" class="btn btn-light">Liquidar</button>
+                    </div>
+                    <div class="col">
+                        <input type="number" name="galonesDrenados" id="galonesDrenados" class="form-control" placeholder="Vol drenaje" width="50">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-12 mx-auto">
+            <div id="results" class="d-none mt-4 bg-light p-3 rounded shadow">
+                <div class="table-responsive">
+                    <table class="table table-light table-striped">
+                        <thead>
+                            <div class="text-center bg-light p-3">
+                                <h5>LIQUIDACION</h5>
+                            </div>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="altura_inicial_result"></td>
+                                <td id="vol_1_result"></td>
+                            </tr>
+                            <tr>
+                                <td id="altura_final_result"></td>
+                                <td id="vol_2_result"></td>
+                            </tr>
+                            <tr>
+                                <td>Vol Bruto</td>
+                                <td><strong><span id="vol_br_rec_result"></span></strong></td>
+                            </tr>
+                            <tr>
+                                <td>Temperatura</td>
+                                <td id="temperatura_result"></td>
+                            </tr>
+                            <tr>
+                                <td>API Obs.</td>
+                                <td id="api_result"></td>
+                            </tr>
+                            <tr>
+                                <td>API 60 °F(C)</td>
+                                <td id="api_corregido_result"></td>
+                            </tr>
+                            <tr>
+                                <td>Factor Cor.</td>
+                                <td id="fac_cor_result"></td>
+                            </tr>
+                            <tr>
+                                <td>Neto</td>
+                                <td><strong><span id="vol_neto_rec_result"></span></strong></td>
+                            </tr>
+                            <tr>
+                                <td>Neto CarroTK</td>
+                                <td><strong><span id="volumen_result"></span></strong></td>
+                            </tr>
+                            <tr>
+                                <td>Diferencia</td>
+                                <td><strong><span id="diferencia_result"></span></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-4">
+                    <p id="mensaje_result"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

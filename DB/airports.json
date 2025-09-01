@@ -1,0 +1,5 @@
+{
+  "BAQ": { "nombre": "Barranquilla", "tanques": ["BAQ-TK-503", "BAQ-TK-504", "BAQ-TK-505"] },
+  "SMR": { "nombre": "Santa Marta", "tanques": ["SMR-TK-101", "SMR-TK-102", "SMR-TK-103", "SMR-TK-104"] },
+  "CTG": { "nombre": "Cartagena", "tanques": ["CTG-TK-08", "CTG-TK-09", "CTG-TK-10"] }
+}
