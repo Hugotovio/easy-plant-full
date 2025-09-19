@@ -10,25 +10,24 @@ from api import ApiCorreccion
 from datos import DataLoader
 from validaciones import Validaciones
 
-# --- Inicialización de Flask ---
+# --- Flask app ---
 app = Flask(__name__)
 
-# --- Seguridad y sesiones ---
-app.secret_key = os.environ["FLASK_SECRET_KEY"]  # obligatorio en producción
-app.permanent_session_lifetime = timedelta(days=7)
+# --- Variables de entorno obligatorias ---
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError(
+        "La variable de entorno FLASK_SECRET_KEY no está definida. "
+        "Configúrala en Railway → Environments → production."
+    )
 
-# Configuración de cookies seguras
-app.config.update(
-    SESSION_COOKIE_SECURE=True,      # solo HTTPS
-    SESSION_COOKIE_HTTPONLY=True,    # evita acceso desde JS
-    SESSION_COOKIE_SAMESITE='Lax',   # previene CSRF básico
-    MAX_CONTENT_LENGTH=2 * 1024 * 1024  # máximo 2MB por request
-)
+BASE_DIR = Path(__file__).parent.resolve()
 
-# --- Rutas de archivos (desde variables de entorno) ---
-BASE_DIR = Path(__file__).parent
 AIRPORTS_FILE = os.environ.get("AIRPORTS_FILE", str(BASE_DIR / "DB" / "airports.json"))
 TANK_MAP_FILE = os.environ.get("TANK_MAP_FILE", str(BASE_DIR / "DB" / "tank_map.json"))
+
+# --- Sesiones ---
+app.permanent_session_lifetime = timedelta(days=7)
 
 # --- Carga de catálogos ---
 def load_airports(file_path: str) -> dict:
@@ -82,7 +81,7 @@ def redondear_a_05_half_up(valor: float) -> float:
     entero = d.quantize(Decimal('1'), rounding=ROUND_HALF_UP)
     return float(entero / Decimal('2'))
 
-# --- Ruta principal ---
+# --- Rutas ---
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST':
@@ -133,7 +132,7 @@ def main():
 
     return render_template('index.html', airports=AIRPORTS)
 
-# --- Cálculo de volumen ---
+# --- Cálculo ---
 def calculate_volume(numero, altura_inicial, altura_final, api_observado, temp, volumen, drenaje):
     tks = DataLoader("DB/tablas_aforo")
     obAforo = CalculadoraTanque(altura_inicial, volumen, numero)
@@ -177,8 +176,8 @@ def prepare_result_message(diferencia, tolerancia):
     else:
         return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
-# --- Run ---
+# --- Inicio ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
+    debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() in ("true", "1")
     app.run(host="0.0.0.0", port=port, debug=debug_mode)
