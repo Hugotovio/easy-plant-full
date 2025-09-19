@@ -1,8 +1,9 @@
 import os, json
 from pathlib import Path
 from datetime import timedelta
-from flask import Flask, jsonify, render_template, request, session
 from decimal import Decimal, ROUND_HALF_UP
+
+from flask import Flask, jsonify, render_template, request, session
 from flask_wtf.csrf import CSRFProtect
 
 from aforo import CalculadoraTanque
@@ -10,13 +11,24 @@ from api import ApiCorreccion
 from datos import DataLoader
 from validaciones import Validaciones
 
+# --- Inicialización de app ---
 app = Flask(__name__)
 
-# --- Sesión y CSRF ---
+# --- Seguridad y sesión ---
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me")
 app.permanent_session_lifetime = timedelta(days=7)
+
+# Cookies seguras para producción
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='Lax'
+)
+
+# CSRF protection
 csrf = CSRFProtect(app)
 
+# --- Archivos base ---
 BASE_DIR = Path(__file__).parent
 AIRPORTS_FILE = os.environ.get("AIRPORTS_FILE", str(BASE_DIR / "DB" / "airports.json"))
 TANK_MAP_FILE = os.environ.get("TANK_MAP_FILE", str(BASE_DIR / "DB" / "tank_map.json"))
@@ -73,7 +85,7 @@ def redondear_a_05_half_up(valor: float) -> float:
     entero = d.quantize(Decimal('1'), rounding=ROUND_HALF_UP)
     return float(entero / Decimal('2'))
 
-# --- Ruta principal ---
+# --- Rutas ---
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST':
@@ -166,6 +178,7 @@ def prepare_result_message(diferencia, tolerancia):
     else:
         return f"Conforme, tolerancia: {round(tolerancia, 2)} gls.", "display-5 text-success"
 
+# --- Run ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
